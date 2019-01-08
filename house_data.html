@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TGIF-House Data</title>
+	<!-- Mobile-first (To ensure proper rendering and touch zooming-->
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- ===== FAVICON ===== -->
+	<link rel="icon" type="image/png" href="img/favicon.png">
+	<!-- ===== BOOTSTRAP LINKS REQ'D ===== -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<!-- ===== MY CSS LINKS ===== -->
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+	<div id="app" class="container">
+		<header>
+			<div class="p-3 d-flex flex-row justify-content-between align-items-center bg-image">
+				<div class="d-flex"><img src="img/TGIF_logo.png" alt="TGIF logo" width="170" height="100"></div>
+				<div>
+					<h1>TRANSPARENT GOVERNMENT IN FACT</h1>
+				</div>
+				<div class="d-flex align-self-center">
+					<a href="mailto:info@tgif.net"><img src="img/envelope32.png" alt="envelope">
+						info@tgif.net</a> </div>
+			</div>
+			<nav class="navbar navbar-expand-sm navbar-light bg-secondary">
+				<div class="position_sticky_top">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item"><a class="text-white nav-link h5" href="index.html">Home</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="h5 text-white nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Congress 113</a>
+							<ul class="dropdown-menu">
+								<li class=" my-0 py-0"><a class="dropdown-item" href="senate_data.html">Senate</a></li>
+								<li><a class="dropdown-item" href="house_data.html">House</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="h5 text-white nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Attendance</a>
+							<ul class="dropdown-menu">
+								<li class=" my-0 py-0"><a class="dropdown-item" href="senate_attendance.html">Senate</a></li>
+								<li><a class="dropdown-item" href="house_attendance.html">House</a></li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="h5 text-white nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Loyalty</a>
+							<ul class="dropdown-menu">
+								<li class=" my-0 py-0"><a class="dropdown-item" href="senate_loyalty.html">Senate</a></li>
+								<li><a class="dropdown-item" href="house_loyalty.html">House</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<!--		============= loader =============  -->
+			<div id="loader" v-if="loaderVisible">
+				<div class="lds-spinner">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			<!--		============= loader =============  -->
+		</header>
+		<main v-if="contentVisible">
+			<div class="w-75 py-3 text-justify">
+				<h2>Congressmen</h2>
+				<p>The major power of the House is to pass federal legislation that affects the entire country, although its bills must also be passed by the Senate and further agreed to by the U.S. President before becoming law (unless both the House and Senate re-pass the legislation with a two-thirds majority in each chamber). The House has some exclusive powers: the power to initiate revenue bills, to impeach officials (impeached officials are subsequently tried in the Senate), and to elect the U.S. President in case there is no majority in the Electoral College.</p>
+				<p>Each U.S. state is represented in the House in proportion to its population as measured in the census, but every state is entitled to at least one representative. </p>
+			</div>
+			<div class="d-flex justify-content-between text-primary bg-light">
+				<div>
+					<label>Filter by Party: </label>
+					<input id="republican" v-model="partyFilter" type="checkbox" name="republican" value="R"><span>Republican</span>
+					<input id="democrat" v-model="partyFilter" type="checkbox" name="democrat" value="D"><span>Democrat</span>
+					<input id="independent" v-model="partyFilter" type="checkbox" name="independent" value="I"><span>Independent</span>
+				</div>
+				<div class="d-flex flex-column">
+					<label>Filter by State:</label>
+					<select name="state" v-model="statesFilter" id="selectDropDown" multiple="multiple" size="2">
+						<option id="allStates" value="all">Select All</option>
+						<option v-for="item in generateStates" v-bind:value="item">{{item}}</option>
+					</select>
+					<label>(Hold CTRL for multiple choices)</label>
+				</div>
+			</div>
+			<div class="table-responsive">
+				<span class="text-danger verdana_font">
+					Showing ({{filteredMembers.length}} / {{members.length}}) members
+				</span>
+				<table class="w-100 table-striped table-hover text-center">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Party Affiliation</th>
+							<th>State Code</th>
+							<th>Seniority</th>
+							<th>Percentage of votes</th>
+						</tr>
+					</thead>
+					<tbody id="extract-data">
+						<tr v-for="item in filteredMembers">
+							<td><a v-bind:href="item.url" target="_blank">{{item.first_name}} {{item.middle_name}} {{item.last_name}}</a></td>
+							<td>{{item.party}}</td>
+							<td>{{item.state}}</td>
+							<td>{{item.seniority}}</td>
+							<td>{{item.votes_with_party_pct}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="noMatch" v-if="warningVisible" class="bg-light">
+				<h4 class="h4 text-danger text-center py-2 font-weight-bold verdana_font">NO RESULTS HAVE BEEN FOUND</h4>
+			</div>
+		</main>
+		<footer>
+			<div class="bg-secondary my-5">
+				<p class="h5 text-white text-center  py-3 align-bottom">&copy;2016 TGIF | All Rights Reserved</p>
+			</div>
+		</footer>
+	</div>
+	<!--	===== JQuery CDN ===== -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<!--	===== VUE CDN ===== -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!-- ===== BOOTSTRAP CDN SCRIPTS ===== -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<!-- ===== MY SCRIPTS ===== -->
+	<script src="js/main.js"></script>
+</body>
+
+</html>
